@@ -1,0 +1,40 @@
+public with sharing class QuoteControllerExtension {
+    @TestVisible private final Quote quote;
+    @TestVisible private final Id recordId;
+
+    public QuoteControllerExtension(ApexPages.StandardController std)
+    {
+        recordId = std.getId();
+        quote = [SELECT Id, Country_of_Transaction__c FROM Quote WHERE Id = :recordId];
+    }
+    public List<QuoteLineItem> getQuoteLineItems() {
+        return [SELECT Description, Line_Order__c, ListPrice, Monthly_Recurring_Revenue__c, Managed_Sales_Price__c, MS_Quantity__c, No_of_Months__c, One_Time_Charge__c, Quantity, TotalPrice, UnitPrice, Product2.Name, Product2.ProductCode, Spec_Item_header__c, Spec_Item_Header__r.Number_of_Spec_Line_Items__c, FROM QuoteLineItem WHERE QuoteId = :quote.Id ORDER BY Line_Order__c, Product2.Name];
+    }
+    public List<Spec_item_details__c> getSpecItems() {
+		return [SELECT Cost_in_currency__c, Desc__c, PartNo__c, quantity__c, Spec_Item_header__c FROM Spec_item_details__c WHERE Spec_Item_header__c IN (SELECT Id FROM Spec_Item_header__c WHERE Quote__c = :quote.Id)];
+    }
+   	public static Quotation_Information__mdt getQuotationInformation() {
+        List<Quotation_Information__mdt> quotationInformation = [SELECT Left_Footer__c, Right_Footer__c FROM Quotation_Information__mdt WHERE DeveloperName = 'Standard'];
+		return quotationInformation[0];
+	}
+    public Country_Office_Locations__mdt getCountryOfficeLocations() {
+        List<Country_Office_Locations__mdt> CountryOfficeLocations = [SELECT Entity_Name__c, Office_Address__c FROM Country_Office_Locations__mdt WHERE Country__c = :quote.Country_of_Transaction__c];
+        return CountryOfficeLocations[0];
+	}
+    public static String getSignatureImageLink() {
+        String decodedURL;
+        try {
+            User user = [SELECT Id, Quote_Signature__c FROM User WHERE Id = :UserInfo.getUserId()][0];
+            String quoteSignature = user.Quote_Signature__c;
+            Matcher imgMatcher = Pattern.compile('<img(.+?)>').matcher(quoteSignature);
+            while (imgMatcher.find()) {
+                String imageTag = imgMatcher.group();
+                String imageURL = imageTag.substringBetween(' src="', '"');
+                decodedURL = imageURL.unescapeHtml4();
+            }
+        } catch (Exception e) {
+            decodedURL = NULL;
+        }
+        return decodedURL;
+    }
+}
