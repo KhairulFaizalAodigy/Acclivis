@@ -419,36 +419,36 @@
                     <div>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
                             <apex:outputText value="{0, Number, ###, ##0.00}">
-                                <apex:param value="{!Quote.MS_Sales_Price__c}"/>
+                                <apex:param value="{!Quote.Subtotal}"/>
                             </apex:outputText>
                         </apex:outputPanel>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
                             <apex:outputText value="{0, Number, Currency}">
-                                <apex:param value="{!Quote.MS_Sales_Price__c}"/>
+                                <apex:param value="{!Quote.Subtotal}"/>
                             </apex:outputText>
                         </apex:outputPanel>                                             
                     </div>
                     <div>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
                             <apex:outputText value="{0, Number, ###, ##0.00}">
-                                <apex:param value="{!Quote.MS_Tax__c}"/>
+                                <apex:param value="{!Quote.Tax}"/>
                             </apex:outputText>
                         </apex:outputPanel>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
                             <apex:outputText value="{0, Number, Currency}">
-                                <apex:param value="{!Quote.MS_Tax__c}"/>
+                                <apex:param value="{!Quote.Tax}"/>
                             </apex:outputText>
                         </apex:outputPanel>                                        
                     </div>
                     <div>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
                             <apex:outputText value="{0, Number, ###, ##0.00}">
-                                <apex:param value="{!Quote.MS_Grand_Total__c}"/>
+                                <apex:param value="{!Quote.GrandTotal}"/>
                             </apex:outputText>
                         </apex:outputPanel>
                         <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
                             <apex:outputText value="{0, Number, Currency}">
-                                <apex:param value="{!Quote.MS_Grand_Total__c}"/>
+                                <apex:param value="{!Quote.GrandTotal}"/>
                             </apex:outputText>
                         </apex:outputPanel>                                           
                     </div>                    
