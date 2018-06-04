@@ -1,0 +1,71 @@
+public without sharing class QuoteLineItemHandler extends DefaultTriggerHandler {
+    public static Boolean IS_TRIGGER_RUN = false;
+
+    /*       
+    *     @Author Joseph Tey
+    *     @Date 08/04/2018
+    */
+    
+    override public void beforeDelete(MAP<Id, SObject> oldMap) {
+        if (!IS_TRIGGER_RUN || Test.isRunningTest()) {
+            deleteSpecHeader((MAP<Id, QuoteLineItem>) oldMap);
+            IS_TRIGGER_RUN = true;
+        }
+    }
+
+    
+    override public void afterInsert(MAP<Id, SObject> newSoMap) {
+
+        if (!IS_TRIGGER_RUN) {
+            CreateSpecHeader((MAP<Id, QuoteLineItem>) newSoMap);
+            IS_TRIGGER_RUN = true;
+        }
+    }
+    
+    private static void CreateSpecHeader(MAP<Id, QuoteLineItem> newQuoteLineItem){
+        
+        List<Spec_Item_header__c> SpecHeaderCreationList = new List<Spec_Item_header__c> ();
+        LIST<QuoteLineItem> updateQuoteLineItemList = new LIST<QuoteLineItem>();
+        
+        for(QuoteLineItem rec : newQuoteLineItem.values()){
+
+            SpecHeaderCreationList.add(new Spec_Item_header__c(Quote_Line_Item__c  = rec.Id,
+                                                               //QuoteId__c  = rec.Id,
+                                                               Quote__c  = rec.QuoteId,
+																CurrencyIsoCode = rec.CurrencyIsoCode));
+        }
+        
+        if (SpecHeaderCreationList.size()>0){
+            Database.SaveResult[] lsr = Database.insert(SpecHeaderCreationList,true);
+           
+            for(Spec_Item_header__c rec : SpecHeaderCreationList){
+                updateQuoteLineItemList.add(new QuoteLineItem(id  = rec.Quote_Line_Item__c,
+                                                              Spec_Item_header__c  = rec.id));
+            }   
+            
+            if (updateQuoteLineItemList.size()>0){
+                Database.SaveResult[] quoteLinelsr = Database.update(updateQuoteLineItemList,true);
+            }
+                
+        }
+    }
+    
+    private static void deleteSpecHeader(MAP<Id, QuoteLineItem> oldQuoteLineItem){
+        
+        List<Spec_Item_header__c> SpecHeaderDeletionList = new List<Spec_Item_header__c> ();
+      
+        for(QuoteLineItem rec : oldQuoteLineItem.values()){
+
+            if( rec.Spec_Item_header__c != null){
+                SpecHeaderDeletionList.add(new Spec_Item_header__c(id  = rec.Spec_Item_header__c));
+                
+            }
+        }
+        
+        if(SpecHeaderDeletionList.size()>0){
+            Database.DeleteResult[] srList = Database.delete(SpecHeaderDeletionList);
+
+        }
+        
+    }
+}
