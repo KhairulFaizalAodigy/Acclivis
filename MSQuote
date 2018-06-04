@@ -1,0 +1,522 @@
+<apex:page standardController="Quote" showHeader="false" extensions="QuoteControllerExtension" renderAs="pdf">
+    
+    <body>
+
+		<apex:stylesheet value="{!URLFOR($Resource.pdfresources, 'MS_style.css')}"/>
+
+        <img src="{!URLFOR($Resource.pdfresources, 'logo_2.png')}" class="logo"/>
+
+        <br/><br/>
+
+        <table class="header">
+            <tr>
+                <th>
+                    <apex:outputText style="white-space: pre;" value="{!CountryOfficeLocations.Entity_Name__c}" />
+                </th>
+            </tr>
+            <tr>
+                <td>
+                    <apex:outputText style="white-space: pre;" value="{!CountryOfficeLocations.Office_Address__c}" />
+                </td>
+            </tr>
+            <tr>
+                <td style="line-height: 1px; padding-top: 1px;">
+                    Company Reg: 200910436K
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 2.5px;">
+                    GST Registration Number: 200910436K
+                </td>
+            </tr>
+        </table>
+
+        <table class="subHeader">
+            <tr>
+                <th>
+                    QUOTATION
+                </th>
+            </tr>
+        </table>
+
+        <table class="quoteInfo">
+        <col style="width: 8%;"/>
+        <col style="width: 63%;"/>
+        <col style="width: 14%;"/>
+        <col style="width: 15%;"/>
+            <tr>
+                <td style="text-align: right;">
+                    COMPANY:
+                </td>
+                <td>
+                    {!Quote.Account.Name}
+                </td>
+                <td style="text-align: right;">
+                    REF NO:
+                </td>
+                <td>
+                    {!Quote.QuoteNumber}
+                </td>
+            </tr>
+            <tr></tr><tr></tr>
+            <tr>
+                <td style="text-align: right;">
+                    ATTN:
+                </td>
+                <td>
+                    {!Quote.Contact.Name}
+                </td>
+                <td style="text-align: right;">
+                    DATE:
+                </td>
+                <td>
+                    <apex:outputText value="{0, Date, dd/MM/yy}">
+                        <apex:param value="{!Quote.CreatedDate}" />
+                    </apex:outputText>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">
+                    ADDRESS:
+                </td>
+                <td>
+                    {!Quote.BillingStreet}
+                </td>
+                <td style="text-align: right;">
+                    PAGES:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                </td>
+                <td>
+                    {!Quote.BillingCity}
+                    <apex:outputPanel rendered="{!Quote.BillingCity != NULL && Quote.BillingState != NULL}">,
+                    </apex:outputPanel>
+                    {!Quote.BillingState}
+                    {!Quote.BillingPostalCode}
+                    <apex:outputPanel rendered="{!Quote.BillingPostalCode != NULL && Quote.BillingCountry != NULL}">,
+                    </apex:outputPanel>
+                    {!Quote.BillingCountry}
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">
+                    TEL:
+                </td>
+                <td>
+                    {!Quote.Phone}
+                </td>
+                <td style="text-align: right;">
+                    VALIDITY:
+                </td>
+                <td>
+                    <apex:outputText value="{0, Number, Integer}">
+                        <apex:param value="{!Quote.Validity_Period__c}"/>
+                    </apex:outputText>
+                    <apex:outputPanel rendered="{!Quote.Validity_Period__c != NULL}">
+                        working days
+                    </apex:outputPanel>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">
+                    FAX:
+                </td>
+                <td>
+                    {!Quote.Fax}
+                </td>
+                <td style="text-align: right;">
+                    START - END DATE:
+                </td>
+                <td>
+                    <apex:outputText value="{0, Date, dd/MM/yy}">
+                        <apex:param value="{!Quote.Opportunity.Service_Commencement_Date__c}" />
+                    </apex:outputText>
+                    <apex:outputPanel rendered="{!Quote.Opportunity.Service_Commencement_Date__c != null && Quote.Opportunity.Service_End_Date__c != null}"> -
+                    </apex:outputPanel>
+                    <apex:outputText value="{0, Date, dd/MM/yy}">
+                        <apex:param value="{!Quote.Opportunity.Service_End_Date__c}" />
+                    </apex:outputText>
+                    <apex:outputPanel rendered="{!Quote.Opportunity.Service_Commencement_Date__c = null && Quote.Opportunity.Service_End_Date__c = null}">
+                        TBC
+                    </apex:outputPanel>                    
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right;">
+                    EMAIL:
+                </td>
+                <td>
+                    {!Quote.Email}
+                </td>
+            </tr>
+        </table>
+
+        <table class="main">
+        <col style="width: 4%;"/>
+        <col style="width: 14%;"/>
+        <col style="width: 38%;"/>
+        <col style="width: 4%;"/>
+        <col style="width: 6%;"/>
+        <col style="width: 11%;"/>
+        <col style="width: 11%;"/>
+        <col style="width: 12%;"/>
+            <thead>
+                <tr>
+                    <th class="leftCell">NO</th>
+                    <th>PART NO</th>
+                    <th>ITEM DESCRIPTION</th>
+                    <th>QTY</th>
+                    <th style="font-size: 0.95em;">NO OF MONTHS</th>
+                    <th>
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	OTC ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	OTC
+                    	<!--</apex:outputPanel>-->                     
+					</th>
+                    <th>
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	MRC ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	MRC
+                    	<!--</apex:outputPanel>-->                  
+					</th>
+                    <th class="rightCell">
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	TOTAL COST ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	TOTAL COST
+                    	<!--</apex:outputPanel>-->
+                    </th>
+                </tr>
+            </thead>
+            <tr>
+                <td class="leftCell"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><b>{!Quote.Opportunity.CurrencyIsoCode}</b></td>
+                <td><b>{!Quote.Opportunity.CurrencyIsoCode}</b></td>
+                <td class="rightCell"><b>{!Quote.Opportunity.CurrencyIsoCode}</b></td>
+            </tr>
+            <apex:variable value="{!0}" var="index" />
+            <apex:repeat value="{!QuoteLineItems}" var="line">
+                <tr>
+                    <td class="leftCell">
+                        <apex:variable value="{!index + 1}" var="index" />
+                        {!index}
+                    </td>
+                    <td style="text-align: left;">
+                        {!line.Product2.Name}
+                    </td>
+                    <td style="text-align: left;">
+                        {!line.Description}
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, Number, Integer}">
+                            <apex:param value="{!line.Quantity}"/>
+                        </apex:outputText>
+                    </td>
+                    <td> 
+                        <apex:outputPanel rendered="{!line.No_of_Months__c != null}">
+							{!line.No_of_Months__c}
+                    	</apex:outputPanel>            
+                        <apex:outputPanel rendered="{!line.No_of_Months__c = null}">-
+                    	</apex:outputPanel>               
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!line.One_Time_Charge__c}"/>
+                            </apex:outputText>
+                    	</apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!line.One_Time_Charge__c}"/>
+                            </apex:outputText>
+                    	</apex:outputPanel>                       
+                        	<apex:outputPanel rendered="{!line.One_Time_Charge__c = null}">-
+                        </apex:outputPanel>
+                    </td>
+                    <td>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!line.Monthly_Recurring_Revenue__c}"/>
+                            </apex:outputText>
+                    	</apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!line.Monthly_Recurring_Revenue__c}"/>
+                            </apex:outputText>
+                    	</apex:outputPanel>                       
+                        <apex:outputPanel rendered="{!line.Monthly_Recurring_Revenue__c = null}">-
+                        </apex:outputPanel>                   
+                    </td>
+                    <td class="rightCell">
+						<apex:outputPanel rendered="{!line.Subtotal > 0 && Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!line.Subtotal}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                        
+						<apex:outputPanel rendered="{!line.Subtotal > 0 && Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!line.Subtotal}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>       
+						<apex:outputPanel rendered="{!line.Subtotal = 0}">-
+                        </apex:outputPanel>
+                    </td>
+                </tr>
+                <apex:repeat value="{!SpecItems}" var="spec">
+                    <apex:outputText rendered="{!spec.Spec_Item_header__c = line.Spec_Item_header__c}">
+                        <tr>
+                            <td class="leftCell"></td>
+                            <td style="text-align: left; font-size: 0.95em; overflow: hidden;">
+                                <apex:outputText escape="false" value="{!spec.PartNo__c}" />
+                            </td>  
+                            <td style="text-align: left;">
+                                <apex:outputText escape="false" value="{!spec.Desc__c}" />
+                            </td>
+                            <td>
+                                <apex:outputText escape="false" value="{!spec.quantity__c}" />
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>                            
+                            <td class="rightCell"></td>                        
+                        </tr>
+                    </apex:outputText>
+                </apex:repeat>                 
+            </apex:repeat>
+            <tr class="calculation">
+                <td rowspan="4" class="leftCell"></td>
+                <td rowspan="4"></td>
+                <td rowspan="4" colspan="3" style="text-align: right; vertical-align: middle; border-right: 0;">
+                    <div>&nbsp;</div>
+                    <div>Total Investment:</div>
+                        <apex:outputPanel rendered="{!Quote.Country_of_Transaction__c = 'Indonesia'}">
+                        	<div>VAT:</div>
+                    	</apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Country_of_Transaction__c != 'Indonesia'}">
+                        	<div>GST:</div>
+                    	</apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Country_of_Transaction__c = 'Indonesia'}">
+                        	<div>TOTAL INVESTMENT w VAT:</div>
+                    	</apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Country_of_Transaction__c != 'Indonesia'}">
+                        	<div>TOTAL INVESTMENT w GST:</div>
+                    	</apex:outputPanel>                    
+                </td>
+                <td rowspan="4" style="border-left: 0; border-right: 0;">
+                    <div>
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	OTC ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	OTC
+                    	<!--</apex:outputPanel>-->
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.Total_One_Time_Charge__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_One_Time_Charge__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                        
+                    </div>
+                    <div>  
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.Total_One_Time_Charge__c * Quote.Tax_Rate__c / 100}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_One_Time_Charge__c * Quote.Tax_Rate__c / 100}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!(Quote.Total_One_Time_Charge__c + (Quote.Total_One_Time_Charge__c * Quote.Tax_Rate__c / 100))}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_One_Time_Charge__c + (Quote.Total_One_Time_Charge__c * Quote.Tax_Rate__c / 100)}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                        
+                    </div>
+                </td>
+                <td rowspan="4" style="border-left: 0; border-right: 0;">
+                    <div>
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	MRC ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	MRC
+                    	<!--</apex:outputPanel>-->
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.Total_Monthly_Recurring_Revenue__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_Monthly_Recurring_Revenue__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>      
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.Total_Monthly_Recurring_Revenue__c * Quote.Tax_Rate__c / 100}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_Monthly_Recurring_Revenue__c * Quote.Tax_Rate__c / 100}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                                               
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!(Quote.Total_Monthly_Recurring_Revenue__c + (Quote.Total_Monthly_Recurring_Revenue__c * Quote.Tax_Rate__c / 100))}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.Total_Monthly_Recurring_Revenue__c + (Quote.Total_Monthly_Recurring_Revenue__c * Quote.Tax_Rate__c / 100)}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                    </div>
+                </td>
+                <td style="border-left: 0; border-right: 1px solid black;">
+                    <div>
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                        	Total ('000)
+                    	</apex:outputPanel>-->
+                        <!--<apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">-->
+                        	Total
+                    	<!--</apex:outputPanel>-->                        
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.MS_Sales_Price__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.MS_Sales_Price__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                                             
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.MS_Tax__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.MS_Tax__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                                        
+                    </div>
+                    <div>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode = 'IDR'}">
+                            <apex:outputText value="{0, Number, ###, ##0.00}">
+                                <apex:param value="{!Quote.MS_Grand_Total__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!Quote.Opportunity.CurrencyIsoCode != 'IDR'}">
+                            <apex:outputText value="{0, Number, Currency}">
+                                <apex:param value="{!Quote.MS_Grand_Total__c}"/>
+                            </apex:outputText>
+                        </apex:outputPanel>                                           
+                    </div>                    
+                </td>
+            </tr>
+            <hr/>
+        </table>
+
+		<apex:outputPanel rendered="{!Quote.Remarks__c != null}">
+            <div style="font-weight:bold; margin-top: 20px;">
+                <u>Remarks</u><br/>
+                <apex:outputText style="white-space: pre;" value="{!Quote.Remarks__c}" />
+            </div>
+		</apex:outputPanel>
+        
+        <div class="termsAndConditions">
+            <u>Terms &amp; Conditions</u><br/>
+            <apex:outputText style="white-space: pre;" value="{!Quote.Terms_and_Conditions__c}" />
+        </div>        
+        
+        <div class="leftFooter">
+            <apex:outputText style="white-space: pre;" value="{!QuotationInformation.Left_Footer__c}" />
+        </div>
+
+        <div class="rightFooter">
+            <apex:outputText style="white-space: pre;" value="{!QuotationInformation.Right_Footer__c}" />
+        </div>
+
+        <table class="signOff">
+        <col style="width: 55.5%;"/>
+        <col style="width: 44.5%;"/>
+            <tr>
+                <td>
+                    <apex:outputPanel rendered="{!NOT(ISNULL(SignatureImageLink))}">
+                        <img src="{!SignatureImageLink}" style="height:35px; margin-top:-20px;"/>
+                    </apex:outputPanel>
+                </td>
+            </tr>
+            <tr>
+                <td>Name: {!$User.FirstName} {!$User.LastName}</td>
+                <td>Name: _______________________________</td>
+            </tr>
+            <tr>
+                <td>Title: {!$User.Title}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>{!$Organization.Name}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Tel: {!$User.Phone}</td>
+                <td>Title: ________________________________</td>
+            </tr>
+            <tr>
+                <td>Fax: {!$User.Fax}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>HP: {!$User.MobilePhone}</td>
+                <td></td>
+            </tr>
+            <tr style="margin-bottom: 0; padding-bottom: 0;">
+                <td style="margin-bottom: 0; padding-bottom: 0;">Email: {!$User.Email}</td>
+                <td style="margin-bottom: 0; padding-bottom: 0;">Company: ____________________________</td>
+            </tr>
+        </table>
+
+    </body>
+
+</apex:page>
