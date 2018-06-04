@@ -1,0 +1,5 @@
+trigger QuoteLineItem on QuoteLineItem (before insert, after insert, before update, after update, before delete, after delete, after undelete){
+//(before insert, after insert, before update, after update, before delete, after delete) {
+
+   TriggerHandlerManager.createAndExecuteHandler(QuoteLineItemHandler.class);
+}
